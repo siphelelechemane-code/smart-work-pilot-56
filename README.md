@@ -46,7 +46,7 @@ Recommendations
 Follow-up questions
 Optional source/article text
 Clear distinction between source material and AI-generated analysis
-AI-generated research should be reviewed and verified against reliable sources before being used for important decisions.
+Important: AI-generated research should be reviewed and verified against reliable sources before being used for important decisions.
 
 💬 AI Workplace Chatbot
 An interactive workplace assistant for everyday productivity.
@@ -102,7 +102,7 @@ This helps reduce hallucinations and improves the reliability of generated workp
 🛡️ Responsible AI
 WorkMate AI includes responsible AI safeguards throughout the application.
 
-AI-generated content disclaimer
+AI-Generated Content Disclaimer
 AI-generated content may contain errors. Review and verify important information before relying on it or sending it externally. Do not enter confidential, sensitive, or personal information unless permitted by your organisation's policies.
 
 The application also:
@@ -130,8 +130,6 @@ Mobile-friendly forms
 Stacked input/output sections
 Touch-friendly controls
 🧭 Navigation
-The application includes:
-
 Dashboard
 ├── Email Generator
 ├── Meeting Summarizer
@@ -182,7 +180,7 @@ Example:
 
 AI_API_KEY=your_api_key_here
 
-Never commit API keys, passwords, tokens, or other secrets to the repository.
+Security: Never commit API keys, passwords, tokens, or other secrets to the repository.
 
 Use a .env file locally and add it to .gitignore.
 
@@ -191,7 +189,7 @@ Live Demo:
 https://smart-work-pilot-56.lovable.app
 
 📊 Project Requirements
-WorkMate AI satisfies the required AI-powered feature criteria by implementing:
+WorkMate AI satisfies the required AI-powered feature criteria:
 
 Requirement	Status
 Smart Email Generator	✅
@@ -238,4 +236,4 @@ The application can be further developed through the Lovable editor or locally u
 📄 License
 This project is intended for educational and project demonstration purposes.
 
-Add an appropriate open-source license if you plan to distribute the project publicly.
+If you plan to distribute the project publicly, add an appropriate open-source license, such as the MIT License, to the repository.

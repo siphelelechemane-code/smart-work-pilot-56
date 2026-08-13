@@ -6,7 +6,7 @@ A responsive SaaS-style dashboard app with all five AI features, real AI respons
 
 - Persistent sidebar on desktop (Dashboard, Email Generator, Meeting Summarizer, Task Planner, Research Assistant, AI Chatbot, Settings); collapsible sheet menu on mobile with a top bar.
 - Shared workspace shell: page header, input panel, output panel, "AI-generated" badge, copy/regenerate actions, loading/empty/error states, toasts.
-- Design direction: polished professional SaaS — deep indigo/slate palette with a single bright accent, rounded cards, clear type hierarchy, semantic tokens only (no hardcoded colors), full light/dark support.
+- Design direction: polished professional SaaS in dark blue and cream — deep navy surfaces (#0f1b3d / #1e3a5f) with cream text and card backgrounds (#f5f0e0 / #e8edf3) and a lighter steel-blue accent (#3b6fa0). Sidebar and dashboard icons use dark blue on cream (and cream on navy in dark mode). Rounded cards, clear type hierarchy, semantic tokens only (no hardcoded colors), full light/dark support.
 
 ## Pages
 

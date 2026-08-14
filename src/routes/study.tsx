@@ -10,7 +10,6 @@ import {
   Youtube,
 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 
 import { AiBadge } from "@/components/app/AiBadge";
 import { AppShell } from "@/components/app/AppShell";

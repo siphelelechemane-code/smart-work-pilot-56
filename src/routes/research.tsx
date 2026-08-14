@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { FileText, Loader2, RefreshCw, Sparkles } from "lucide-react";
+import { FileText, GraduationCap, Loader2, RefreshCw, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -10,6 +10,7 @@ import { CopyButton } from "@/components/app/CopyButton";
 import { DisclaimerBanner } from "@/components/app/DisclaimerBanner";
 import { EditableList } from "@/components/app/EditableList";
 import { PageHeader } from "@/components/app/PageHeader";
+import { VerifyBadge } from "@/components/app/VerifyBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -44,21 +45,23 @@ function ResearchPage() {
 
   const [topic, setTopic] = useState("");
   const [sourceText, setSourceText] = useState("");
+  const [mode, setMode] = useState<"General" | "N6">("General");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ResearchOutput | null>(null);
 
-  async function handleResearch() {
+  async function handleResearch(nextMode: "General" | "N6" = mode) {
     if (!topic.trim()) {
       toast.error("Enter a topic or question");
       return;
     }
+    setMode(nextMode);
     setLoading(true);
     setError(null);
     try {
-      const output = await run({ data: { topic, sourceText } });
+      const output = await run({ data: { topic, sourceText, mode: nextMode } });
       setResult(output);
-      logActivity("Research Assistant", topic.slice(0, 60));
+      logActivity("Research Assistant", `${nextMode}: ${topic.slice(0, 60)}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -70,7 +73,7 @@ function ResearchPage() {
     <AppShell>
       <PageHeader
         title="AI Research Assistant"
-        description="Analyse a topic on its own or against source material you paste in. AI analysis is always visually separated from your source."
+        description="Research a civil engineering topic, or analyse source material you paste in. Use “Explain at N6 level” for study-ready explanations with worked steps."
       />
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -83,7 +86,7 @@ function ResearchPage() {
               <Label htmlFor="topic">Topic or question</Label>
               <Input
                 id="topic"
-                placeholder="How should we approach hybrid-work policy for a 40-person team?"
+                placeholder="Explain reinforced concrete beams at N6 level"
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
               />
@@ -105,14 +108,24 @@ function ResearchPage() {
                 gives general background you must verify.
               </p>
             </div>
-            <Button onClick={handleResearch} disabled={loading} className="w-full">
-              {loading ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Sparkles className="size-4" />
-              )}
-              {loading ? "Researching…" : "Run research"}
-            </Button>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Button onClick={() => void handleResearch("General")} disabled={loading}>
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Sparkles className="size-4" />
+                )}
+                {loading ? "Researching…" : "Run research"}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => void handleResearch("N6")}
+                disabled={loading}
+              >
+                <GraduationCap className="size-4" />
+                Explain at N6 level
+              </Button>
+            </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
           </CardContent>
         </Card>
@@ -133,7 +146,8 @@ function ResearchPage() {
           {result && (
             <>
               <div className="flex flex-wrap items-center gap-2">
-                <AiBadge label="AI analysis — unverified" />
+                <AiBadge label={mode === "N6" ? "AI explanation — N6 level" : "AI analysis"} />
+                <VerifyBadge />
                 <CopyButton
                   value={[
                     result.executiveSummary,
@@ -214,7 +228,12 @@ function ResearchPage() {
                     {result.confidenceNote}
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <Button variant="outline" size="sm" onClick={handleResearch} disabled={loading}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => void handleResearch()}
+                      disabled={loading}
+                    >
                       <RefreshCw className="size-4" />
                       Regenerate
                     </Button>

@@ -4,7 +4,8 @@ export const emailInput = z.object({
   purpose: z.string().min(1),
   recipient: z.string(),
   keyPoints: z.string(),
-  tone: z.enum(["Formal", "Friendly", "Persuasive"]),
+  template: z.string(),
+  tone: z.enum(["Formal", "Friendly", "Persuasive", "Professional", "Urgent"]),
   length: z.enum(["Short", "Medium", "Detailed"]),
 });
 export type EmailInput = z.infer<typeof emailInput>;
@@ -57,6 +58,7 @@ export type PlannerOutput = z.infer<typeof plannerOutput>;
 export const researchInput = z.object({
   topic: z.string().min(1),
   sourceText: z.string(),
+  mode: z.enum(["General", "N6"]),
 });
 
 export const researchOutput = z.object({
@@ -68,3 +70,39 @@ export const researchOutput = z.object({
   confidenceNote: z.string(),
 });
 export type ResearchOutput = z.infer<typeof researchOutput>;
+
+export const studyInput = z.object({
+  module: z.string().min(1),
+  topic: z.string().min(1),
+  depth: z.enum(["Quick", "N6", "Detailed"]),
+});
+
+export const studyOutput = z.object({
+  explanation: z.string(),
+  keyConcepts: z.array(z.string()),
+  terminology: z.array(z.object({ term: z.string(), meaning: z.string() })),
+  formulae: z.array(z.string()),
+  workedExample: z.string(),
+  commonMistakes: z.array(z.string()),
+  practiceQuestions: z.array(z.string()),
+  flashcards: z.array(z.object({ front: z.string(), back: z.string() })),
+  verificationNote: z.string(),
+});
+export type StudyOutput = z.infer<typeof studyOutput>;
+
+export const pastPaperInput = z.object({
+  question: z.string().min(1),
+  module: z.string(),
+});
+
+export const pastPaperOutput = z.object({
+  breakdown: z.string(),
+  requiredKnowledge: z.array(z.string()),
+  steps: z.array(z.string()),
+  finalAnswer: z.string(),
+  whyItWorks: z.string(),
+  similarQuestion: z.string(),
+  assumptions: z.array(z.string()),
+  verificationNote: z.string(),
+});
+export type PastPaperOutput = z.infer<typeof pastPaperOutput>;

@@ -23,21 +23,24 @@ export type Activity = {
 type State = {
   tasks: Task[];
   activity: Activity[];
+  studied: string[];
 };
 
 type Store = State & {
   setTasks: (tasks: Task[]) => void;
+  addTasks: (tasks: Task[]) => void;
   toggleTask: (id: string) => void;
   updateTask: (id: string, patch: Partial<Task>) => void;
   moveTask: (id: string, direction: -1 | 1) => void;
   removeTask: (id: string) => void;
+  toggleStudied: (key: string) => void;
   logActivity: (tool: string, detail: string) => void;
   clearActivity: () => void;
   ready: boolean;
 };
 
 const STORAGE_KEY = "aiwpa-workspace-v1";
-const empty: State = { tasks: [], activity: [] };
+const empty: State = { tasks: [], activity: [], studied: [] };
 
 const WorkspaceContext = createContext<Store | null>(null);
 
@@ -69,6 +72,20 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   }, [state, ready]);
 
   const setTasks = useCallback((tasks: Task[]) => setState((s) => ({ ...s, tasks })), []);
+
+  const addTasks = useCallback(
+    (tasks: Task[]) => setState((s) => ({ ...s, tasks: [...s.tasks, ...tasks] })),
+    [],
+  );
+
+  const toggleStudied = useCallback((key: string) => {
+    setState((s) => ({
+      ...s,
+      studied: s.studied.includes(key)
+        ? s.studied.filter((k) => k !== key)
+        : [...s.studied, key],
+    }));
+  }, []);
 
   const toggleTask = useCallback((id: string) => {
     setState((s) => ({
@@ -117,10 +134,12 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       ...state,
       ready,
       setTasks,
+      addTasks,
       toggleTask,
       updateTask,
       moveTask,
       removeTask,
+      toggleStudied,
       logActivity,
       clearActivity,
     }),
@@ -128,10 +147,12 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       state,
       ready,
       setTasks,
+      addTasks,
       toggleTask,
       updateTask,
       moveTask,
       removeTask,
+      toggleStudied,
       logActivity,
       clearActivity,
     ],

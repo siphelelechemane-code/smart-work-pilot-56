@@ -44,8 +44,20 @@ export const Route = createFileRoute("/email")({
   component: EmailPage,
 });
 
-type Tone = "Formal" | "Friendly" | "Persuasive";
+type Tone = "Formal" | "Friendly" | "Persuasive" | "Professional" | "Urgent";
 type Length = "Short" | "Medium" | "Detailed";
+
+const TEMPLATES = [
+  "Requesting drawings",
+  "Requesting technical clarification",
+  "Reporting a site issue",
+  "Asking for material information",
+  "Submitting a progress update",
+  "Requesting leave",
+  "Reporting a delay",
+  "Communicating with a supervisor",
+  "Following up on outstanding work",
+];
 
 function EmailPage() {
   const run = useServerFn(generateEmail);
@@ -56,6 +68,7 @@ function EmailPage() {
   const [keyPoints, setKeyPoints] = useState("");
   const [tone, setTone] = useState<Tone>("Formal");
   const [length, setLength] = useState<Length>("Medium");
+  const [template, setTemplate] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,7 +83,7 @@ function EmailPage() {
     setError(null);
     try {
       const output = await run({
-        data: { purpose, recipient, keyPoints, tone, length },
+        data: { purpose, recipient, keyPoints, tone, length, template },
       });
       setResult(output);
       logActivity("Email Generator", `${tone} email: ${output.subject}`);
@@ -84,8 +97,8 @@ function EmailPage() {
   return (
     <AppShell>
       <PageHeader
-        title="Smart Email Generator"
-        description="Give the assistant the context and it will draft a professional email. Nothing is invented — anything missing is flagged for you."
+        title="AI Email Generator"
+        description="Site and office emails for an engineering environment. Nothing is invented — missing drawing numbers, dates and specifications are flagged for you."
       />
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -95,10 +108,30 @@ function EmailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
+              <Label>Civil engineering template</Label>
+              <div className="flex flex-wrap gap-2">
+                {TEMPLATES.map((item) => (
+                  <Button
+                    key={item}
+                    type="button"
+                    size="sm"
+                    variant={template === item ? "default" : "outline"}
+                    onClick={() => {
+                      const next = template === item ? "" : item;
+                      setTemplate(next);
+                      if (next && !purpose.trim()) setPurpose(next);
+                    }}
+                  >
+                    {item}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="purpose">Purpose</Label>
               <Input
                 id="purpose"
-                placeholder="Ask the client for an extension on the audit deadline"
+                placeholder="Ask my site supervisor to clarify the reinforcement spec for tomorrow's pour"
                 value={purpose}
                 onChange={(e) => setPurpose(e.target.value)}
               />
@@ -107,7 +140,7 @@ function EmailPage() {
               <Label htmlFor="recipient">Recipient / context</Label>
               <Input
                 id="recipient"
-                placeholder="Thandi Mokoena, external client, first contact this quarter"
+                placeholder="Site supervisor, Bridge B2 deck, works starting 07:00 tomorrow"
                 value={recipient}
                 onChange={(e) => setRecipient(e.target.value)}
               />
@@ -117,7 +150,7 @@ function EmailPage() {
               <Textarea
                 id="points"
                 rows={6}
-                placeholder={"- New deadline: 14 September\n- Reason: waiting on supplier data\n- Offer a progress call on Friday"}
+                placeholder={"- Drawing S-104 rev B shows Y12 bars, the bar schedule shows Y16\n- Pour is planned for 07:00 tomorrow\n- Need written confirmation before steel is fixed"}
                 value={keyPoints}
                 onChange={(e) => setKeyPoints(e.target.value)}
               />
@@ -133,6 +166,8 @@ function EmailPage() {
                     <SelectItem value="Formal">Formal</SelectItem>
                     <SelectItem value="Friendly">Friendly</SelectItem>
                     <SelectItem value="Persuasive">Persuasive</SelectItem>
+                    <SelectItem value="Professional">Professional</SelectItem>
+                    <SelectItem value="Urgent">Urgent</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

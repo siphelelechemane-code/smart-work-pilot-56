@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, RefreshCw, Sparkles } from "lucide-react";
+import { CalendarPlus, Loader2, RefreshCw, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { MeetingOutput } from "@/lib/ai-schemas";
 import { summarizeMeeting } from "@/lib/ai.functions";
-import { useWorkspace } from "@/lib/workspace-store";
+import { newId, useWorkspace } from "@/lib/workspace-store";
 
 export const Route = createFileRoute("/meetings")({
   head: () => ({
@@ -40,12 +40,31 @@ export const Route = createFileRoute("/meetings")({
 
 function MeetingsPage() {
   const run = useServerFn(summarizeMeeting);
-  const { logActivity } = useWorkspace();
+  const { logActivity, addTasks } = useWorkspace();
+  const navigate = useNavigate();
 
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<MeetingOutput | null>(null);
+
+  function sendToPlanner() {
+    if (!result || result.actionItems.length === 0) return;
+    addTasks(
+      result.actionItems.map((item) => ({
+        id: newId(),
+        title: item.owner && item.owner !== "Not specified" ? `${item.task} — ${item.owner}` : item.task,
+        priority: "Medium" as const,
+        estimatedDuration: "Not specified",
+        suggestedSlot: "Not scheduled",
+        reason: "Action item from a meeting summary",
+        deadline: item.deadline,
+        completed: false,
+      })),
+    );
+    toast.success(`${result.actionItems.length} action items added to your Task Planner`);
+    void navigate({ to: "/planner" });
+  }
 
   async function handleSummarize() {
     if (notes.trim().length < 20) {
@@ -80,7 +99,7 @@ function MeetingsPage() {
     <AppShell>
       <PageHeader
         title="Meeting Notes Summarizer"
-        description="Paste raw notes and get a structured, editable breakdown. Missing owners and deadlines are labelled rather than guessed."
+        description="Paste site meeting, toolbox talk or technical review notes. Missing owners and deadlines are labelled rather than guessed, and action items can be sent straight to your Task Planner."
       />
 
       <Card className="shadow-soft">
@@ -132,6 +151,12 @@ function MeetingsPage() {
           <div className="flex flex-wrap items-center gap-2">
             <AiBadge />
             <CopyButton value={plainText} label="Copy all" />
+            {result.actionItems.length > 0 && (
+              <Button size="sm" onClick={sendToPlanner}>
+                <CalendarPlus className="size-4" />
+                Send action items to Task Planner
+              </Button>
+            )}
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
